@@ -1,0 +1,65 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
+export default function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username === 'admin' && password === '123456') {
+      localStorage.setItem('isLoggedIn', 'true');
+      router.push('/dashboard');
+    } else {
+      alert('نام کاربری یا رمز اشتباه است');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 shadow-2xl">
+        <div className="text-center mb-8">
+          <div className="text-6xl mb-4">⚖️</div>
+          <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">مدیریت پرونده وکالت</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">ورود به سیستم</p>
+        </div>
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">نام کاربری</label>
+            <Input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="admin"
+              required
+              className="text-right"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">رمز عبور</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="123456"
+              required
+              className="text-right"
+            />
+          </div>
+          <Button type="submit" className="w-full text-lg py-6 bg-blue-600 hover:bg-blue-700">
+            ورود به سیستم
+          </Button>
+        </form>
+        <p className="text-center text-xs text-gray-500 mt-6">
+          پیش‌فرض: admin / 123456
+        </p>
+      </Card>
+    </div>
+  );
+}
