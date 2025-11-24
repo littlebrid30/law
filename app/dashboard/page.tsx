@@ -1,81 +1,51 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import moment from 'jalali-moment';
-import { initDb } from '@/lib/db';
+import { LogOut } from 'lucide-react';
 
 export default function Dashboard() {
-  const [todayTasks, setTodayTasks] = useState(0);
-  const [delayedTasks, setDelayedTasks] = useState(0);
-  const [todaysList, setTodaysList] = useState<any[]>([]);
-
-  useEffect(() => {
-    const loadDashboard = async () => {
-      const db = initDb();
-      const today = moment().format('jYYYY/jMM/jDD');
-      
-      const tasks = await db.execute('SELECT * FROM tasks WHERE due_date = ?', [today]);
-      const delayed = await db.execute('SELECT * FROM tasks WHERE due_date < ? AND completed = 0', [today]);
-      
-      setTodayTasks(tasks.rows.length);
-      setDelayedTasks(delayed.rows.length);
-      setTodaysList(tasks.rows.slice(0, 5));
-    };
-    loadDashboard();
-  }, []);
+  const logout = () => {
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = '/login';
+  };
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-4xl font-bold text-blue-700 dark:text-blue-400">میز کار وکالت</h1>
-
-      {/* کارت‌های اصلی */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-          <h3 className="text-2xl font-bold">کارهای امروز</h3>
-          <p className="text-5xl mt-4">{todayTasks}</p>
-          <Button variant="secondary" className="mt-4">مشاهده در تقویم</Button>
-        </Card>
-
-        <Card className="p-6 bg-gradient-to-br from-red-500 to-red-600 text-white">
-          <h3 className="text-2xl font-bold">کارهای دارای تاخیر</h3>
-          <p className="text-5xl mt-4">{delayedTasks}</p>
-          <Button variant="secondary" className="mt-4">مشاهده لیست</Button>
-        </Card>
-
-        <Card className="p-6 bg-gradient-to-br from-green-500 to-green-600 text-white">
-          <h3 className="text-2xl font-bold">نامه‌های پیگیری</h3>
-          <p className="text-5xl mt-4">۱۲</p>
-          <Button variant="secondary" className="mt-4">رفتن به پیگیری</Button>
-        </Card>
+    <div className="min-h-screen bg-gray-50" dir="rtl">
+      <div className="bg-blue-700 text-white p-6 shadow-lg">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <h1 className="text-3xl font-bold">میز کار وکالت</h1>
+          <button onClick={logout} className="flex items-center gap-2 hover:bg-blue-800 px-4 py-2 rounded-lg transition">
+            <LogOut className="w-5 h-5" /> خروج
+          </button>
+        </div>
       </div>
 
-      {/* لیست کارهای امروز */}
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">کارهای من امروز</h2>
-        <div className="space-y-3">
-          {todaysList.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">هیچ وظیفه‌ای برای امروز ثبت نشده</p>
-          ) : (
-            todaysList.map((task: any) => (
-              <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" className="w-5 h-5" />
-                  <div>
-                    <p className="font-semibold">{task.title}</p>
-                    <p className="text-sm text-gray-600">{task.description || 'بدون توضیح'}</p>
-                  </div>
-                </div>
-                <span className="text-sm text-blue-600">{moment(task.due_date, 'jYYYY/jMM/jDD').format('jD jMMMM')}</span>
-              </div>
-            ))
-          )}
-          {todaysList.length > 4 && (
-            <Button className="w-full mt-4">مشاهده همه وظایف</Button>
-          )}
+      <div className="max-w-6xl mx-auto p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="text-5xl mb-4">پرونده</div>
+            <p className="text-3xl font-bold text-blue-600">۱۲</p>
+            <p className="text-gray-600">پرونده فعال</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="text-5xl mb-4">وظیفه</div>
+            <p className="text-3xl font-bold text-red-600">۵</p>
+            <p className="text-gray-600">وظیفه امروز</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="text-5xl mb-4">نامه</div>
+            <p className="text-3xl font-bold text-green-600">۸</p>
+            <p className="text-gray-600">نامه در انتظار</p>
+          </div>
         </div>
-      </Card>
+
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold mb-6 text-blue-700">خوش آمدید!</h2>
+          <p className="text-lg text-gray-700 leading-8">
+            سیستم مدیریت پرونده وکالت شخصی شما با موفقیت راه‌اندازی شد.<br />
+            از این به بعد می‌تونید پرونده، وظیفه، تقویم و پیگیری‌هاتون رو اینجا مدیریت کنید.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
